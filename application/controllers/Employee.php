@@ -13,6 +13,11 @@ class Employee extends CI_Controller {
 	public function index()
 	{	
 
+		$this->load->view('home');
+	}
+    public function emp_list()
+	{	
+
 		$this->load->view('emp_list');
 	}
 	public function getDatatableAjax(){
@@ -296,6 +301,10 @@ class Employee extends CI_Controller {
             'data'=>$data,
         );
         echo  json_encode($output);		
+	}
+    function home()
+	{
+		$this->load->view('home');
 	}
     function world_city_list()
 	{
