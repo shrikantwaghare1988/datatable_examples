@@ -20,6 +20,9 @@
   <a href="<?php echo base_url()?>Employee/city_filter_list" class="list-group-item list-group-item-action">City Filter List</a>
   <a href="<?php echo base_url()?>Employee/world_city_list" class="list-group-item list-group-item-action">World City List</a>
   <a href="<?php echo base_url()?>Employee/emp_list" class="list-group-item list-group-item-action">Employee List</a>
+  <a href="<?php echo base_url()?>Employee/emi_calculator" class="list-group-item list-group-item-action">EMI Calculator</a>
+  <a href="<?php echo base_url()?>Employee/emi_calculator2" class="list-group-item list-group-item-action">EMI Calculator 2</a>
+
  
 </div>
 

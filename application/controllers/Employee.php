@@ -15,6 +15,20 @@ class Employee extends CI_Controller {
 
 		$this->load->view('home');
 	}
+    public function google_map()
+    {
+        $this->load->view('google_map');
+    }
+    public function emi_calculator()
+	{
+
+		$this->load->view('emi_calculator');
+	}
+    public function emi_calculator2()
+	{
+
+		$this->load->view('emi_calculator2');
+	}
     public function emp_list()
 	{	
 
@@ -161,7 +175,7 @@ class Employee extends CI_Controller {
 	}
 
 	function city_list()
-	{
+	{  
 		$this->load->view('city_list');
 	}
 	public function getCityListAjax(){	
