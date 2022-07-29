@@ -32,7 +32,7 @@ class Compare extends CI_Controller
          */
         $tables_to_create = array_diff($development_tables, $live_tables);
         $tables_to_drop = array_diff($live_tables, $development_tables);
-        //pre($tables_to_create);die;
+        
         /**
          * Create/Drop any tables that are not in the Live database
          */
@@ -49,8 +49,8 @@ class Compare extends CI_Controller
         /*
          * update tables, add/update/emove columns
          */
-        $sql_commands_to_run = (is_array($tables_to_update) && !empty($tables_to_update)) ? array_merge($sql_commands_to_run, $this->update_existing_tables($tables_to_update)) : '';
-
+        $sql_commands_to_run = (is_array($tables_to_update) && !empty($tables_to_update)) ? array_merge($sql_commands_to_run, $this->update_existing_tables($tables_to_update)) : $sql_commands_to_run;
+        
         if (is_array($sql_commands_to_run) && !empty($sql_commands_to_run))
         {
             echo "<h2>The database is out of Sync!</h2>\n";
@@ -83,8 +83,16 @@ class Compare extends CI_Controller
             foreach ($tables as $table)
             {
                 $query = $this->DB1->query("SHOW CREATE TABLE `$table` -- create tables");
-                $table_structure = $query->row_array();
-                $sql_commands_to_run[] = $table_structure["Create Table"] . ";\n";
+                $table_structure = $query->row_array();                
+                $table_type = $this->getTableType($this->DB1,$table);            
+                if($table_type == "VIEW")
+                {
+                    $sql_commands_to_run[] = $table_structure["Create View"] . ";\n";
+                }
+                else
+                {
+                    $sql_commands_to_run[] = $table_structure["Create Table"] . ";\n";
+                }                
             }
         }
 
@@ -115,9 +123,17 @@ class Compare extends CI_Controller
          */
         foreach ($development_tables as $table)
         {
-            $query = $this->DB1->query("SHOW CREATE TABLE `$table` -- dev");
+            $query = $this->DB1->query("SHOW CREATE TABLE `$table` -- dev");            
             $table_structure = $query->row_array();
-            $development_table_structures[$table] = $table_structure["Create Table"];
+            $table_type = $this->getTableType($this->DB1,$table);            
+            if($table_type == "VIEW")
+            {
+                $development_table_structures[$table] = $table_structure["Create View"];
+            }
+            else
+            {
+                $development_table_structures[$table] = $table_structure["Create Table"];    
+            } 
         }
 
         /*
@@ -127,7 +143,15 @@ class Compare extends CI_Controller
         {
             $query = $this->DB2->query("SHOW CREATE TABLE `$table` -- live");
             $table_structure = $query->row_array();
-            $live_table_structures[$table] = $table_structure["Create Table"];
+            $table_type = $this->getTableType($this->DB2,$table);  
+            if($table_type == "VIEW")
+            {
+                $live_table_structures[$table] = $table_structure["Create View"];
+            }
+            else
+            {
+                $live_table_structures[$table] = $table_structure["Create Table"];
+            }            
         }
 
         /*
@@ -321,7 +345,14 @@ class Compare extends CI_Controller
 
         return false;
     }
-
+    function getTableType($db,$table)
+    {
+        $sql = "SELECT * FROM information_schema.tables WHERE  table_name = '".$table."'";
+        $query = $db->query($sql);
+        $table_structure = $query->row_array();
+        $table_type = $table_structure['TABLE_TYPE'];
+        return $table_type;
+    }
 }
 
 /* End of file compare.php */
